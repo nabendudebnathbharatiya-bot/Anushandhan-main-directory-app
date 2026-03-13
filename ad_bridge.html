@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: sans-serif; background: #000; color: white; margin: 0; overflow: hidden; }
-        .ad-viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
-        .ad-img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .ad-viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #111; }
+        .ad-img { width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity 0.5s ease; }
         .controls { position: fixed; top: 20px; right: 20px; z-index: 100; text-align: right; }
-        .btn { background: #fbbf24; color: #000; font-weight: bold; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; transition: 0.3s; }
-        .btn:hover { background: #f59e0b; }
-        .timer { background: rgba(0,0,0,0.8); padding: 10px; border: 1px solid #fbbf24; border-radius: 8px; display: none; margin-top: 10px; font-weight: bold; }
+        .btn { background: #fbbf24; color: #000; font-weight: bold; padding: 12px 24px; border-radius: 12px; cursor: pointer; border: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
+        .btn:hover { background: #f59e0b; transform: scale(1.05); }
+        .timer { background: rgba(0,0,0,0.85); padding: 12px 20px; border: 2px solid #fbbf24; border-radius: 12px; display: none; margin-top: 10px; font-weight: bold; color: #fbbf24; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -27,75 +27,69 @@
     </div>
 
     <div class="controls">
-        <button id="skip-btn" onclick="startTimer()" class="btn">SKIP AD & CONTINUE</button>
-        <div id="timer-box" class="timer">অপেক্ষা করুন: <span id="sec">15</span>s</div>
+        <button id="skip-btn" onclick="startTimer()" class="btn">CONTINUE TO TARGET <i class="fa-solid fa-arrow-right ml-2"></i></button>
+        <div id="timer-box" class="timer tracking-widest">REDIRECTING IN: <span id="sec">15</span>s</div>
     </div>
 
     <script>
         let ads = [];
-        let currentAdIndex = 0; // সিরিয়াল মেইনটেইন করার জন্য
+        let currentAdIndex = 0;
+        let isTimerStarted = false; // ডাবল টাইমার ঠেকানোর জন্য
         const urlParams = new URLSearchParams(window.location.search);
         const targetUrl = urlParams.get('target');
 
         async function loadAds() {
             try {
-                const cacheBuster = new Date().getTime();
-                const res = await fetch('../ad_data.json?v=' + cacheBuster);
-                
-                if (!res.ok) throw new Error("Ad file missing or syntax error");
+                // ক্যাশ বাস্টার যাতে নতুন অ্যাড লিস্ট আসে
+                const res = await fetch('../ad_data.json?v=' + new Date().getTime());
+                if (!res.ok) throw new Error("Ad file missing");
                 
                 ads = await res.json();
                 
                 if(ads.length > 0) {
-                    // ১. প্রি-লোডিং (Preloading): ব্যাকগ্রাউন্ডে ছবিগুলো আগে থেকেই ডাউনলোড করে রাখা
-                    ads.forEach(ad => {
-                        const preloadedImg = new Image();
-                        preloadedImg.src = ad.img;
-                    });
-
-                    showAd();
-                    setInterval(showAd, 3000); // ৫ সেকেন্ড পর পর চেঞ্জ হবে
+                    // প্রথম অ্যাডটি সাথে সাথে লোড করা (কালো স্ক্রিন এড়াতে)
+                    const img = document.getElementById('ad-img');
+                    img.src = ads[0].img;
+                    document.getElementById('ad-link').href = ads[0].link;
+                    
+                    // ৩ সেকেন্ড পর পর অ্যাড রোটেশন শুরু
+                    setInterval(showAd, 3000); 
                 }
-            } catch (e) { 
-                console.error("Ads failed to load:", e); 
-            }
+            } catch (e) { console.error("Ads failed:", e); }
         }
 
         function showAd() {
             if (ads.length === 0) return;
-            
-            // ২. র‍্যান্ডমের বদলে সিরিয়াল অনুযায়ী অ্যাড দেখানো
+            currentAdIndex = (currentAdIndex + 1) % ads.length;
             const ad = ads[currentAdIndex];
             const img = document.getElementById('ad-img');
             
-            // স্মুথ ট্রানজিশনের জন্য একটু অপাসিটি কমিয়ে আবার বাড়ানো
-            img.style.opacity = 0.5;
-            
+            // স্মুথ ফেইড ইফেক্ট
+            img.style.opacity = 0.4;
             setTimeout(() => {
                 img.src = ad.img;
                 document.getElementById('ad-link').href = ad.link;
                 img.style.opacity = 1;
-            }, 150); // ছবি চেঞ্জ হওয়ার সময় সামান্য গ্যাপ
-
-            // ইনডেক্স বাড়ানো (যাতে পরের বার পরের অ্যাড আসে)
-            currentAdIndex = (currentAdIndex + 1) % ads.length;
+            }, 300);
         }
 
         function startTimer() {
+            if(isTimerStarted) return; // একবার শুরু হলে আর কাজ করবে না
+            isTimerStarted = true;
+
             const audio = document.getElementById('bg-music');
-            if(audio) {
-                audio.play().catch(e => console.log("Audio play prevented."));
-            }
+            if(audio) audio.play().catch(e => {});
 
             document.getElementById('skip-btn').style.display = 'none';
             document.getElementById('timer-box').style.display = 'block';
             
-            let count = 15;
+            let count = 15; // ফিক্সড ১৫ সেকেন্ড
             const interval = setInterval(() => {
                 count--;
                 document.getElementById('sec').innerText = count;
                 if(count <= 0) {
                     clearInterval(interval);
+                    // টার্গেট পেজে রিডাইরেক্ট
                     window.location.href = targetUrl ? targetUrl : '../index.html';
                 }
             }, 1000);

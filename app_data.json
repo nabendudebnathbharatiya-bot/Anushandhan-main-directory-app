@@ -1,22 +1,22 @@
 [
   {
     "id": "01",
-    "name": "horor",
-    "tagline": "ভয়ের আগে মূর্ছা...",
+    "name": "চক্র ওয়েব অ্যাপ গ্যালারি",
+    "tagline": "demo ওয়েবপেজে স্বাগতম...",
     "image": "https://raw.githubusercontent.com/nabendudebnathbharatiya-bot/My-app-assets2/main/Ved/Vedbibhajon/images%20(7).jpeg",
     "link": "https://nabendudebnathbharatiya-bot.github.io/horor/",
-    "category": "বেদ",
-    "sub_category": "সামবেদ",
-    "tags": ["বেদ", "সঙ্গীত", "আধ্যাত্মিক"]
+    "category": "ওয়েবপেজ গ্যালারি",
+    "sub_category": "ভার্সন -১",
+    "tags": ["webpage", "code","file structure"]
   },
   {
     "id": "02",
-    "name": "বেদের বিভাজন",
-    "tagline": "প্রাচীন জ্ঞানের মহান ভাণ্ডার",
+    "name": "গল্প চক্রের আসর (বিশ্বসাহিত্য)",
+    "tagline": " আপনার ভালোলাগার গল্পের সারাংশ ",
     "image": "https://raw.githubusercontent.com/nabendudebnathbharatiya-bot/My-app-assets2/main/Ved/Vedbibhajon/Gemini_Generated_Image_mdajj4mdajj4mdaj%20(1).png",
     "link": "https://nabendudebnathbharatiya-bot.github.io/Beder-bibhajon-app/?v=2",
-    "category": "বেদ",
-    "sub_category": "বেদ সমগ্র",
-    "tags": ["বেদ", "চিকিৎসা", "আধ্যাত্মিক"]
+    "category": "গল্প চক্রের আসর",
+    "sub_category": "বিশ্বসাহিত্য",
+    "tags": ["রোমান্টিক", "রহস্য", "যুদ্ধের ঘটনা"]
   }
 ]
